@@ -7,42 +7,52 @@ const options = {
 };
 
 const fetchMovies = async function () {
-  try {
-    const res = await fetch('https://api.themoviedb.org/3/movie/popular?language=ko&page=1', options)
+  try { // try 블록 내 코드가 먼저 실행되고 이 안에서 예외가 발생하면 catch 블록 코드가 실행된다.
+    const res = await fetch('https://api.themoviedb.org/3/movie/popular?language=ko&page=1', options) //fetch 실행
     const data = await res.json(); // 응답 데이터를 JSON으로 변환
-    const movieList = data.results
-
-    displayMovies(movieList);
+    const movieList = data.results // JSON으로 변환하고 받은 results값을 movieList 곳에 할당한다.
+    return movieList;
+    
   } catch (err) {
     console.error(err);
   }
 }
 
-// displayMovies를 
+async function initMovies () {
+  let dataBox = await fetchMovies();
+  displayMovies(dataBox); // 매개 변수 movieList를 가진 displayMovies라는 함수를 실행한다.
+  console.log(dataBox);
+}
+
+initMovies();
+// 화면을 보여주기위해 displayMovies 라는 함수를 선언한다.
 function displayMovies(movieList) {
   console.log(movieList);
 
-  const movieArea = document.querySelector(".cards");
+  // id = cards 가 들어가 있는 태그를 선택해서 movieCard를 선언하고 할당
+  const movieCard = document.querySelector("#cards");
 
+  // html에 값을 넣어주기위해 초기값을 할당한다.
   let html = "";
   
+  // 영화 정보가 담겨있는 movieList 배열을 forEach로 차례대로 반복한다.
+  // movie의 poster_path, title, overview, vote_average 값을 가진 카드를 results 배열안의 배열 갯수만큼 만든다.
   movieList.forEach((movie) => {
     html += `
-    <div class="card" onclick="showId(${movie.id})">
-      <img src= "https://image.tmdb.org/t/p/w500/${movie.poster_path}" class="card-img-top"/>
-      <div class="card-body">
-        <h5 class="card-title">${movie.title}</h5>
-          <p class="card-text>${movie.overview}</p>
-          <p>rate : ${movie.vote_average}</p>
+    <div class="card">
+      <img src= "https://image.tmdb.org/t/p/w500/${movie.poster_path}"/>
+      <div>
+        <h2 class="card-title">${movie.title}</h2>
+          <p>평점 : ${movie.vote_average}</p>
       </div>
     </div>
     `;
   });
 
-  movieArea.innerHTML= html; 
+  movieCard.innerHTML= html; // movieCard의 내부 html요소에 내가 작성한 html을 할당한다.
 }
-
-fetchMovies();
 
 // movieArea에 집어넣는 코드가 누락이 되어있었다.
 // 프로세스를 머리에 정리를 해야한다!!!! 중요
+
+// 초기함수를 만들어서 initMovies async 로 감싸고 
