@@ -22,16 +22,10 @@ const fetchMovies = async function (url) {
   }
 }
 
-// * --- fetchMovies 함수를 실행하기 위한 initMovies 함수 --- *//
-async function initMovies (url) {
-  let dataBox = await fetchMovies(url);
-  displayMovies(dataBox); // 매개 변수 movieList를 가진 displayMovies라는 함수를 실행한다.
-  console.log(dataBox);
-}
-
-initMovies(popularUrl);
-
-
+//* --- HTML 화면에 보여줄 displayMovies 함수 실행 --- *//
+fetchMovies(popularUrl).then(function (movieList) {
+  displayMovies(movieList);
+});
 
 
 // * --- 받아온 데이터를 html에 카드로 구현하는 함수--- *//
@@ -64,12 +58,14 @@ function displayMovies(movieList) {
 
 //* --- 검색 기능 구현 --- *//
 
-  const searchInput = document.querySelector("#search");
+  const searchInputValue = document.querySelector("#search").value;
   const searchBtn = document.querySelector("#search-btn");
-
+  
   searchBtn.addEventListener("click", function () {
-    initMovies(totalUrl);
-    // map을 사용해서 data box 안에 있는 데이터의 movie title과 일치 하는 값을 화면에 보여준다.
-    console.log(dataBox);
-    dataBox.forEach()
+    fetchMovies(totalUrl).then(function (movieList) {
+      if (searchInputValue.length < 0) {
+        return;
+      }
+      displayMovies(movieList);
+    });
   });
