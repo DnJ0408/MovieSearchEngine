@@ -1,3 +1,4 @@
+//* --- 인기영화 목록 받아오는 api request --- *//
 const options = {
   method: 'GET',
   headers: {
@@ -6,9 +7,12 @@ const options = {
   }
 };
 
-const fetchMovies = async function () {
+const popularUrl = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
+const totalUrl = 'https://api.themoviedb.org/3/search/movie?query=%EC%95%88%EB%85%95&include_adult=false&language=ko&page=1';
+
+const fetchMovies = async function (url) {
   try { // try 블록 내 코드가 먼저 실행되고 이 안에서 예외가 발생하면 catch 블록 코드가 실행된다.
-    const res = await fetch('https://api.themoviedb.org/3/movie/popular?language=ko&page=1', options) //fetch 실행
+    const res = await fetch(url, options) //fetch 실행
     const data = await res.json(); // 응답 데이터를 JSON으로 변환
     const movieList = data.results // JSON으로 변환하고 받은 results값을 movieList 곳에 할당한다.
     return movieList;
@@ -18,17 +22,21 @@ const fetchMovies = async function () {
   }
 }
 
-async function initMovies () {
-  let dataBox = await fetchMovies();
+// * --- fetchMovies 함수를 실행하기 위한 initMovies 함수 --- *//
+async function initMovies (url) {
+  let dataBox = await fetchMovies(url);
   displayMovies(dataBox); // 매개 변수 movieList를 가진 displayMovies라는 함수를 실행한다.
   console.log(dataBox);
 }
 
-initMovies();
-// 화면을 보여주기위해 displayMovies 라는 함수를 선언한다.
-function displayMovies(movieList) {
-  console.log(movieList);
+initMovies(popularUrl);
 
+
+
+
+// * --- 받아온 데이터를 html에 카드로 구현하는 함수--- *//
+function displayMovies(movieList) {
+  
   // id = cards 가 들어가 있는 태그를 선택해서 movieCard를 선언하고 할당
   const movieCard = document.querySelector("#cards");
 
@@ -51,14 +59,17 @@ function displayMovies(movieList) {
 
   movieCard.innerHTML= html; // movieCard의 내부 html요소에 내가 작성한 html을 할당한다.
 }
-//-----------------------------------------------------------------------------------------
 
-//TODO - 검색기능 구현
 
-// movieArea에 집어넣는 코드가 누락이 되어있었다.
-// 프로세스를 머리에 정리를 해야한다!!!! 중요
 
-// 초기함수를 만들어서 initMovies async 로 감싸고 
+//* --- 검색 기능 구현 --- *//
 
-// 인풋 박스에 검색 버튼을 쿼리로 가져와서 버튼을 클릭했을때 인풋 박스의 밸류값을 가져오면 검색어가된다.
-// 필터로 걸러서 검색어와 일치하지 않는 것은 보이지 않게 처리한다.
+  const searchInput = document.querySelector("#search");
+  const searchBtn = document.querySelector("#search-btn");
+
+  searchBtn.addEventListener("click", function () {
+    initMovies(totalUrl);
+    // map을 사용해서 data box 안에 있는 데이터의 movie title과 일치 하는 값을 화면에 보여준다.
+    console.log(dataBox);
+    dataBox.forEach()
+  });
