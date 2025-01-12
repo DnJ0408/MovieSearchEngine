@@ -1,4 +1,10 @@
-//* --- 인기영화 목록 받아오는 api request --- *//
+const popularUrl = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
+const totalUrl = 'https://api.themoviedb.org/3/search/movie?query=%EC%95%88%EB%85%95&include_adult=false&language=ko&page=1';
+const movieCard = document.querySelector("#cards");
+const searchBtn = document.querySelector("#search-btn");
+const searchInput = document.querySelector("#search");
+
+//* --- 영화 데이터 불러오기 --- *//
 const options = {
   method: 'GET',
   headers: {
@@ -7,20 +13,27 @@ const options = {
   }
 };
 
-const popularUrl = 'https://api.themoviedb.org/3/movie/popular?language=ko&page=1';
-const totalUrl = 'https://api.themoviedb.org/3/search/movie?query=%EC%95%88%EB%85%95&include_adult=false&language=ko&page=1';
+let movieList = [];
 
 const fetchMovies = async function (url) {
   try { // try 블록 내 코드가 먼저 실행되고 이 안에서 예외가 발생하면 catch 블록 코드가 실행된다.
     const res = await fetch(url, options) //fetch 실행
     const data = await res.json(); // 응답 데이터를 JSON으로 변환
-    const movieList = data.results // JSON으로 변환하고 받은 results값을 movieList 곳에 할당한다.
-    return movieList;
-    
+    return movieList = data.results // JSON으로 변환하고 받은 results값을 movieList 곳에 할당한다.
+   
   } catch (err) {
     console.error(err);
   }
 }
+// function fetchMovies (url) {
+//   fetch(url, options)
+//   .then(function (res) {
+//     return res.json();
+//   })
+//   .then(function (movieList) {
+//     displayMovies(movieList);
+//   })
+// }
 
 //* --- HTML 화면에 보여줄 displayMovies 함수 실행 --- *//
 fetchMovies(popularUrl).then(function (movieList) {
@@ -30,42 +43,36 @@ fetchMovies(popularUrl).then(function (movieList) {
 
 // * --- 받아온 데이터를 html에 카드로 구현하는 함수--- *//
 function displayMovies(movieList) {
-  
-  // id = cards 가 들어가 있는 태그를 선택해서 movieCard를 선언하고 할당
-  const movieCard = document.querySelector("#cards");
-
-  // html에 값을 넣어주기위해 초기값을 할당한다.
   let html = "";
-  
-  // 영화 정보가 담겨있는 movieList 배열을 forEach로 차례대로 반복한다.
-  // movie의 poster_path, title, overview, vote_average 값을 가진 카드를 results 배열안의 배열 갯수만큼 만든다.
-  movieList.forEach((movie) => {
+  movieList.forEach(function (movie) {
     html += `
     <div class="card">
-      <img src= "https://image.tmdb.org/t/p/w500/${movie.poster_path}"/>
-      <div>
-        <h2 class="card-title">${movie.title}</h2>
-          <p>평점 : ${movie.vote_average}</p>
+      <div id="modal" class="modal">
+        <img src= "https://image.tmdb.org/t/p/w500/${movie.poster_path}"/>
+        <div>
+          <h2 class="card-title">${movie.title}</h2>
+            <p>평점 : ${movie.vote_average}</p>
+        </div>
       </div>
     </div>
     `;
   });
-
   movieCard.innerHTML= html; // movieCard의 내부 html요소에 내가 작성한 html을 할당한다.
 }
 
-
-
 //* --- 검색 기능 구현 --- *//
-
-  const searchInputValue = document.querySelector("#search").value;
-  const searchBtn = document.querySelector("#search-btn");
-  
   searchBtn.addEventListener("click", function () {
-    fetchMovies(totalUrl).then(function (movieList) {
-      if (searchInputValue.length < 0) {
-        return;
-      }
-      displayMovies(movieList);
-    });
+    const keyword = searchInput.value; // 사용자가 입력한 검색어
+    const searchUrl = `https://api.themoviedb.org/3/search/movie?query=${keyword}&include_adult=false&language=ko&page=1`
+   
+    fetchMovies(searchUrl).then(function (movieList) {
+      // 검색된 영화들 중에서 제목에 검색어가 포함된 영화들만 필터링
+      const filteredMovies = movieList.filter(function (movie) {
+        return movie.title.includes(keyword);  // 제목에 검색어가 포함되어 있는지 확인
+      });
+      
+      // 필터링된 결과를 화면에 표시
+      displayMovies(filteredMovies);
   });
+});
+
