@@ -7,15 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header></header>
+    <header>
         <div class="title">
             <h1>영화 검색</h1>
-            <input type= "text" id= "search" placeholder="영화 제목을 입력해 주세요."><button id="search-btn">검색</button>
-            <button>북마크 추가</button>
+            <input type= "text" id= "search" placeholder="영화 제목을 입력해 주세요.">
+            <button id="search-btn">검색</button>
+            <button id="bookmark-btn">북마크 추가</button>
         </div>
     </header>
     
+    <!-- 카드 -->
     <main id="cards"></main>
+
+    <!-- 모달 -->
+    <div id="modal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-content"></div>
+    </div>
     
     <script src="script.js"></script>
 </body>
